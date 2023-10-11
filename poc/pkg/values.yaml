@@ -89,4 +89,4 @@ AKSCluster:
 
 keyVault:
   name: aro-rp-aks-kv
-  tlsCertificateName: aks-rp-cert
+  tlsCertificateName: aks-rp-certificate

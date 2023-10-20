@@ -48,7 +48,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: {{ .Values.MISE.container.name }}
-          image: {{ .Values.MISE.container.image }}
+          image: {{ .Values.MISE.container.image }}:{{ .Values.MISE.container.mise_tag }}
           env:
           - name: {{ .Values.MISE.container.env.MISE_APPSETTINGS_LOCATION.name }}
             value: {{ .Values.MISE.container.env.MISE_APPSETTINGS_LOCATION.value }}

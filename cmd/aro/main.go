@@ -5,21 +5,17 @@ package main
 
 import (
 	"context"
-	"flag"
-	"fmt"
-	"math/rand"
-	"net/http"
 	_ "net/http/pprof"
-	"os"
-	"strings"
-	"time"
 
-	"github.com/Azure/ARO-RP/pkg/env"
 	utillog "github.com/Azure/ARO-RP/pkg/util/log"
 	_ "github.com/Azure/ARO-RP/pkg/util/scheme"
-	"github.com/Azure/ARO-RP/pkg/util/version"
+	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+
+	utilgraph "github.com/Azure/ARO-RP/pkg/util/graph"
+	msgraph_models "github.com/Azure/ARO-RP/pkg/util/graph/graphsdk/models"
 )
 
+/*
 func usage() {
 	fmt.Fprint(flag.CommandLine.Output(), "usage:\n")
 	fmt.Fprintf(flag.CommandLine.Output(), "  %s dbtoken\n", os.Args[0])
@@ -33,62 +29,97 @@ func usage() {
 	fmt.Fprintf(flag.CommandLine.Output(), "  %s update-versions\n", os.Args[0])
 	flag.PrintDefaults()
 }
+*/
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
 
-	flag.Usage = usage
-	flag.Parse()
-
-	ctx := context.Background()
-	audit := utillog.GetAuditEntry()
 	log := utillog.GetLogger()
+	log.Print("************* niontive test")
 
-	go func() {
-		log.Warn(http.ListenAndServe("localhost:6060", nil))
-	}()
-
-	log.Printf("starting, git commit %s", version.GitCommit)
-
-	var err error
-	switch strings.ToLower(flag.Arg(0)) {
-	case "dbtoken":
-		checkArgs(1)
-		err = dbtoken(ctx, log)
-	case "deploy":
-		checkArgs(3)
-		err = deploy(ctx, log)
-	case "gateway":
-		checkArgs(1)
-		err = gateway(ctx, log)
-	case "mirror":
-		checkMinArgs(1)
-		err = mirror(ctx, log)
-	case "monitor":
-		checkArgs(1)
-		err = monitor(ctx, log)
-	case "rp":
-		checkArgs(1)
-		err = rp(ctx, log, audit)
-	case "portal":
-		checkArgs(1)
-		err = portal(ctx, log, audit)
-	case "operator":
-		checkArgs(2)
-		err = operator(ctx, log)
-	case "update-versions":
-		checkArgs(1)
-		err = updateOCPVersions(ctx, log)
-	default:
-		usage()
-		os.Exit(2)
-	}
-
+	// Assume env set
+	spTokenCredential, err := azidentity.NewEnvironmentCredential(nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to get environment credential: %s", err)
 	}
+
+	// Inspired by pkg/util/azureclient/environments.go
+	client, err := utilgraph.NewGraphServiceClientWithCredentials(spTokenCredential, nil)
+	if err != nil {
+		log.Fatalf("failed to create graph client: %s", err)
+	}
+	client.GetAdapter().SetBaseUrl("https://graph.microsoft.com/.default" + "v1.0")
+
+	// Inspired by pkg/util/cluster/aad.go
+	displayName := "niontive-e2e-test"
+	appBody := msgraph_models.NewApplication()
+	appBody.SetDisplayName(&displayName)
+
+	appResult, err := client.Applications().Post(context.Background(), appBody, nil)
+	if err != nil {
+		log.Fatalf("failed to create application: %s", err)
+	}
+
+	log.Printf("appResult: %v", appResult)
+
+	log.Print("************* niontive test done!")
+
+	/*
+		rand.Seed(time.Now().UnixNano())
+
+		flag.Usage = usage
+		flag.Parse()
+
+		ctx := context.Background()
+		audit := utillog.GetAuditEntry()
+		log := utillog.GetLogger()
+
+		go func() {
+			log.Warn(http.ListenAndServe("localhost:6060", nil))
+		}()
+
+		log.Printf("starting, git commit %s", version.GitCommit)
+
+		var err error
+		switch strings.ToLower(flag.Arg(0)) {
+		case "dbtoken":
+			checkArgs(1)
+			err = dbtoken(ctx, log)
+		case "deploy":
+			checkArgs(3)
+			err = deploy(ctx, log)
+		case "gateway":
+			checkArgs(1)
+			err = gateway(ctx, log)
+		case "mirror":
+			checkMinArgs(1)
+			err = mirror(ctx, log)
+		case "monitor":
+			checkArgs(1)
+			err = monitor(ctx, log)
+		case "rp":
+			checkArgs(1)
+			err = rp(ctx, log, audit)
+		case "portal":
+			checkArgs(1)
+			err = portal(ctx, log, audit)
+		case "operator":
+			checkArgs(2)
+			err = operator(ctx, log)
+		case "update-versions":
+			checkArgs(1)
+			err = updateOCPVersions(ctx, log)
+		default:
+			usage()
+			os.Exit(2)
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
 }
 
+/*
 func checkArgs(required int) {
 	if len(flag.Args()) != required {
 		usage()
@@ -114,3 +145,4 @@ func DBName(isLocalDevelopmentMode bool) (string, error) {
 
 	return os.Getenv(DatabaseName), nil
 }
+*/

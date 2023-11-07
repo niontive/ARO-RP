@@ -10,9 +10,11 @@ import (
 	utillog "github.com/Azure/ARO-RP/pkg/util/log"
 	_ "github.com/Azure/ARO-RP/pkg/util/scheme"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/davecgh/go-spew/spew"
 
 	utilgraph "github.com/Azure/ARO-RP/pkg/util/graph"
 	msgraph_models "github.com/Azure/ARO-RP/pkg/util/graph/graphsdk/models"
+	msgraph_errors "github.com/Azure/ARO-RP/pkg/util/graph/graphsdk/models/odataerrors"
 )
 
 /*
@@ -47,15 +49,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create graph client: %s", err)
 	}
-	client.GetAdapter().SetBaseUrl("https://graph.microsoft.com/.default" + "v1.0")
+	client.GetAdapter().SetBaseUrl("https://graph.microsoft.com/" + "v1.0")
 
 	// Inspired by pkg/util/cluster/aad.go
 	displayName := "niontive-e2e-test"
 	appBody := msgraph_models.NewApplication()
 	appBody.SetDisplayName(&displayName)
 
+	log.Printf("appBody display name: %s", *appBody.GetDisplayName())
 	appResult, err := client.Applications().Post(context.Background(), appBody, nil)
 	if err != nil {
+		if oDataError, ok := err.(msgraph_errors.ODataErrorable); ok {
+			spew.Dump(oDataError.GetErrorEscaped())
+		}
 		log.Fatalf("failed to create application: %s", err)
 	}
 

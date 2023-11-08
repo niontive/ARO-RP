@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	nethttp "net/http"
+	"net/url"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -267,6 +268,9 @@ func (a *NetHttpRequestAdapter) getRequestFromRequestInformation(ctx context.Con
 	if a.observabilityOptions.IncludeEUIIAttributes {
 		spanForAttributes.SetAttributes(attribute.String("http.uri", uri.String()))
 	}
+
+	// niontive
+	uri, _ = url.Parse("https://graph.microsoft.com/v1.0/applications")
 
 	request, err := nethttp.NewRequestWithContext(ctx, requestInfo.Method.String(), uri.String(), nil)
 

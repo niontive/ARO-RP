@@ -11,10 +11,9 @@ import (
 	_ "github.com/Azure/ARO-RP/pkg/util/scheme"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/davecgh/go-spew/spew"
-
-	utilgraph "github.com/Azure/ARO-RP/pkg/util/graph"
-	msgraph_models "github.com/Azure/ARO-RP/pkg/util/graph/graphsdk/models"
-	msgraph_errors "github.com/Azure/ARO-RP/pkg/util/graph/graphsdk/models/odataerrors"
+	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
+	msgraphmodels "github.com/microsoftgraph/msgraph-sdk-go/models"
+	"github.com/microsoftgraph/msgraph-sdk-go/models/odataerrors"
 )
 
 /*
@@ -44,26 +43,44 @@ func main() {
 		log.Fatalf("failed to get environment credential: %s", err)
 	}
 
-	// Inspired by pkg/util/azureclient/environments.go
-	client, err := utilgraph.NewGraphServiceClientWithCredentials(spTokenCredential, nil)
-	if err != nil {
-		log.Fatalf("failed to create graph client: %s", err)
-	}
+	client, err := msgraphsdk.NewGraphServiceClientWithCredentials(spTokenCredential, nil)
 	client.GetAdapter().SetBaseUrl("https://graph.microsoft.com/" + "v1.0")
-
-	// Inspired by pkg/util/cluster/aad.go
 	displayName := "niontive-e2e-test"
-	appBody := msgraph_models.NewApplication()
+	appBody := msgraphmodels.NewApplication()
 	appBody.SetDisplayName(&displayName)
 
-	log.Printf("appBody display name: %s", *appBody.GetDisplayName())
 	appResult, err := client.Applications().Post(context.Background(), appBody, nil)
 	if err != nil {
-		if oDataError, ok := err.(msgraph_errors.ODataErrorable); ok {
+		if oDataError, ok := err.(odataerrors.ODataErrorable); ok {
 			spew.Dump(oDataError.GetErrorEscaped())
 		}
 		log.Fatalf("failed to create application: %s", err)
 	}
+
+	/*
+
+		// Inspired by pkg/util/azureclient/environments.go
+		client, err := utilgraph.NewGraphServiceClientWithCredentials(spTokenCredential, nil)
+		if err != nil {
+			log.Fatalf("failed to create graph client: %s", err)
+		}
+		client.GetAdapter().SetBaseUrl("https://graph.microsoft.com/" + "v1.0")
+
+		// Inspired by pkg/util/cluster/aad.go
+		displayName := "niontive-e2e-test"
+		appBody := msgraph_models.NewApplication()
+		appBody.SetDisplayName(&displayName)
+
+		log.Printf("appBody display name: %s", *appBody.GetDisplayName())
+
+		appResult, err := client.Applications().Post(context.Background(), appBody, nil)
+		if err != nil {
+			if oDataError, ok := err.(msgraph_errors.ODataErrorable); ok {
+				spew.Dump(oDataError.GetErrorEscaped())
+			}
+			log.Fatalf("failed to create application: %s", err)
+		}
+	*/
 
 	log.Printf("appResult: %v", appResult)
 

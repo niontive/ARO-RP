@@ -15,18 +15,18 @@ data:
         "InboundPolicies": 
         [
           {
-            "Label": "{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Label }}",
-            "AuthenticationSchemes": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.AuthenticationSchemes }}"],
-            "TokenTypes": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.TokenTypes }}"],
-            "Authority": "{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Authority }}",
-            "ValidApplicationIds": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.ValidApplicationIds }}"],
+            "Label": "{{ .Values.MISE.configMap.InboundPolicies.ArmPolicy.Label }}",
+            "AuthenticationSchemes": ["{{ .Values.MISE.configMap.InboundPolicies.ArmPolicy.AuthenticationSchemes }}"],
+            "TokenTypes": ["{{ .Values.MISE.configMap.InboundPolicies.ArmPolicy.TokenTypes }}"],
+            "Authority": "{{ .Values.MISE.configMap.InboundPolicies.ArmPolicy.Authority }}",
+            "ValidApplicationIds": ["{{ .Values.MISE.configMap.InboundPolicies.ArmPolicy.ValidApplicationIds }}"],
           },
           {
-            "Label": "{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Internal.Label }}",
-            "AuthenticationSchemes": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Internal.AuthenticationSchemes }}"],
-            "TokenTypes": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Internal.TokenTypes }}"],
-            "Authority": "{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Internal.Authority }}",
-            "ValidApplicationIds": ["{{ .Values.MISE.configMap.AzureAd.InboundPolicies.Internal.ValidApplicationIds }}"],
+            "Label": "{{ .Values.MISE.configMap.InboundPolicies.Internal.Label }}",
+            "AuthenticationSchemes": ["{{ .Values.MISE.configMap.InboundPolicies.Internal.AuthenticationSchemes }}"],
+            "TokenTypes": ["{{ .Values.MISE.configMap.InboundPolicies.Internal.TokenTypes }}"],
+            "Authority": "{{ .Values.MISE.configMap.InboundPolicies.Internal.Authority }}",
+            "ValidApplicationIds": ["{{ .Values.MISE.configMap.InboundPolicies.Internal.ValidApplicationIds }}"],
           }
         ],
       },

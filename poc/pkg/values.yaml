@@ -121,12 +121,14 @@ MISE:
       # Possible log levels: Trace, Debug, Information, Warning, Error, Critical, None 
       LogLevel: Debug
       InboundPolicies:
+        # Policy for ARM
         Arm:
           Label: aro-rp-arm-policy
           AuthenticationSchemes: Bearer
           TokenTypes: AppToken
           Authority: https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0
           ValidApplicationIds: ""
+        # Policy for internal testing
         Internal:
           Label: aro-rp-internal-policy
           AuthenticationSchemes: Bearer
